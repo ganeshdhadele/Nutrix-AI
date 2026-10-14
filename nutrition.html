@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutrition Calculator | Nutrix AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#10151a;color:#f4f5f6;font-family:Arial,sans-serif}
+main{max-width:950px;margin:auto}
+a{color:#c5ff55;text-decoration:none}
+.panel{background:#191f25;border:1px solid #303941;border-radius:16px;padding:22px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+label{display:block;margin-bottom:7px}
+input,select{width:100%;padding:12px;border-radius:8px;border:1px solid #3a454d;background:#10151a;color:white}
+button{padding:12px 17px;border:0;border-radius:9px;background:#c5ff55;color:#111;font-weight:bold;cursor:pointer;margin-top:15px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{padding:16px;background:#222a30;border-radius:12px}
+.stat strong{display:block;font-size:1.4rem;margin-top:8px}
+.muted,.hint{color:#adb7be;line-height:1.6}
+.meal{padding:14px 0;border-bottom:1px solid #303941}
+.message{color:#c5ff55}
+@media(max-width:650px){.grid,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}body{padding:14px}}
+</style>
+</head>
+<body>
+<main>
+<a href="/">← Back to Dashboard</a>
+<h1>Nutrition Calculator</h1>
+<p class="muted">Search food and choose portion size. Nutrition values are estimates.</p>
+
+<section class="panel">
+<h2>Add a meal</h2>
+
+<form id="nutritionForm">
+<div class="grid">
+
+<div>
+<label for="foodSearch">Search Food</label>
+<input id="foodSearch" list="foodOptions"
+placeholder="Type Poha, Rice, Dal, Egg..." required>
+<datalist id="foodOptions"></datalist>
+<p class="hint">Select a food to fill nutrition values automatically.</p>
+</div>
+
+<div>
+<label for="serving">Portion Size</label>
+<select id="serving">
+<option value="0.5">Half Serving</option>
+<option value="1" selected>1 Serving</option>
+<option value="1.5">1.5 Servings</option>
+<option value="2">2 Servings</option>
+</select>
+</div>
+
+<div>
+<label for="mealName">Meal Name</label>
+<input id="mealName" maxlength="150" required>
+</div>
+
+<div>
+<label for="mealType">Meal Type</label>
+<select id="mealType">
+<option>Breakfast</option>
+<option>Lunch</option>
+<option>Snack</option>
+<option>Dinner</option>
+</select>
+</div>
+
+<div>
+<label for="calories">Calories (kcal)</label>
+<input id="calories" type="number" min="0" step="0.1" required value="0">
+</div>
+
+<div>
+<label for="protein">Protein (g)</label>
+<input id="protein" type="number" min="0" step="0.1" required value="0">
+</div>
+
+<div>
+<label for="carbs">Carbohydrates (g)</label>
+<input id="carbs" type="number" min="0" step="0.1" required value="0">
+</div>
+
+<div>
+<label for="fats">Fats (g)</label>
+<input id="fats" type="number" min="0" step="0.1" required value="0">
+</div>
+
+</div>
+
+<p id="foodInfo" class="hint">
+Select a food to calculate nutrition automatically.
+</p>
+
+<button type="submit">Calculate &amp; Save Meal</button>
+<p id="message" class="message" role="status"></p>
+</form>
+</section>
+
+<section class="panel">
+<h2>Nutrition Summary</h2>
+<div class="stats">
+<div class="stat">Calories<strong id="totalCalories">0</strong><span class="muted">kcal</span></div>
+<div class="stat">Protein<strong id="totalProtein">0</strong><span class="muted">g</span></div>
+<div class="stat">Carbs<strong id="totalCarbs">0</strong><span class="muted">g</span></div>
+<div class="stat">Fats<strong id="totalFats">0</strong><span class="muted">g</span></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>Meal History</h2>
+<div id="history">Loading meals...</div>
+</section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const foods = {
+ "Poha": {portion:"1 medium bowl (150 g)", calories:250, protein:5, carbs:42, fats:7},
+ "Cooked rice": {portion:"1 cup (160 g)", calories:205, protein:4.3, carbs:45, fats:0.4},
+ "Chapati": {portion:"1 medium chapati", calories:110, protein:3.5, carbs:18, fats:3},
+ "Dal": {portion:"1 cup (200 g)", calories:180, protein:10, carbs:27, fats:4},
+ "Boiled egg": {portion:"1 large egg", calories:78, protein:6.3, carbs:0.6, fats:5.3},
+ "Milk": {portion:"250 ml whole milk", calories:150, protein:8, carbs:12, fats:8},
+ "Banana": {portion:"1 medium banana", calories:105, protein:1.3, carbs:27, fats:0.4},
+ "Apple": {portion:"1 medium apple", calories:95, protein:0.5, carbs:25, fats:0.3},
+ "Roasted peanuts": {portion:"30 g handful", calories:170, protein:7, carbs:5, fats:14},
+ "Boiled potato": {portion:"1 medium potato", calories:150, protein:4, carbs:34, fats:0.2},
+ "Curd": {portion:"1 bowl (150 g)", calories:90, protein:5, carbs:7, fats:4},
+ "Idli": {portion:"2 medium idlis", calories:130, protein:4, carbs:27, fats:1},
+ "Plain dosa": {portion:"1 medium dosa", calories:170, protein:4, carbs:28, fats:5},
+ "Paneer": {portion:"100 g", calories:265, protein:18, carbs:4, fats:20},
+ "Orange": {portion:"1 medium orange", calories:62, protein:1.2, carbs:15.4, fats:0.2}
+};
+
+Object.keys(foods).forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    $("foodOptions").appendChild(option);
+});
+
+function selectedFood() {
+    const value = $("foodSearch").value.trim().toLowerCase();
+    return Object.keys(foods).find(
+        name => name.toLowerCase() === value
+    );
+}
+
+function fillNutrition() {
+    const name = selectedFood();
+
+    if (!name) {
+        $("foodInfo").textContent =
+            "Choose a food from the suggestions.";
+        return;
+    }
+
+    const food = foods[name];
+    const multiplier = Number($("serving").value) || 1;
+
+    $("mealName").value = name;
+
+    ["calories", "protein", "carbs", "fats"].forEach(key => {
+        $(key).value = (food[key] * multiplier).toFixed(1);
+    });
+
+    $("foodInfo").textContent =
+        "Standard portion: " + food.portion +
+        ". Values adjusted for " + multiplier + " serving(s).";
+}
+
+$("foodSearch").addEventListener("change", fillNutrition);
+$("foodSearch").addEventListener("input", () => {
+    if (selectedFood()) fillNutrition();
+});
+$("serving").addEventListener("change", fillNutrition);
+
+function safeText(value) {
+    const element = document.createElement("span");
+    element.textContent = value ?? "";
+    return element.innerHTML;
+}
+
+async function loadHistory() {
+    try {
+        const response = await fetch("/api/meal-history");
+
+        if (response.status === 401 || response.redirected) {
+            window.location.href = "/login";
+            return;
+        }
+
+        if (!response.ok) throw new Error("Could not load meals.");
+
+        const meals = await response.json();
+        const totals = {
+            calories: 0, protein: 0, carbs: 0, fats: 0
+        };
+
+        meals.forEach(meal => {
+            Object.keys(totals).forEach(key => {
+                totals[key] += Number(meal[key]) || 0;
+            });
+        });
+
+        $("totalCalories").textContent = totals.calories.toFixed(1);
+        $("totalProtein").textContent = totals.protein.toFixed(1);
+        $("totalCarbs").textContent = totals.carbs.toFixed(1);
+        $("totalFats").textContent = totals.fats.toFixed(1);
+
+        if (!meals.length) {
+            $("history").innerHTML =
+                '<p class="muted">No meals saved yet.</p>';
+            return;
+        }
+
+        $("history").innerHTML = meals.map(meal => `
+            <article class="meal">
+                <strong>${safeText(meal.meal_name)}</strong>
+                <p class="muted">
+                    ${safeText(meal.meal_type)} ·
+                    ${safeText(meal.meal_date)}<br>
+                    ${Number(meal.calories).toFixed(1)} kcal ·
+                    Protein ${Number(meal.protein).toFixed(1)} g ·
+                    Carbs ${Number(meal.carbs).toFixed(1)} g ·
+                    Fats ${Number(meal.fats).toFixed(1)} g
+                </p>
+                <button type="button"
+                    data-delete="${Number(meal.id)}">
+                    Delete Meal
+                </button>
+            </article>
+        `).join("");
+
+    } catch (error) {
+        $("history").textContent = error.message;
+    }
+}
+
+$("nutritionForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    $("message").textContent = "Saving meal...";
+
+    const payload = {
+        meal_name: $("mealName").value.trim(),
+        meal_type: $("mealType").value,
+        calories: Number($("calories").value),
+        protein: Number($("protein").value),
+        carbs: Number($("carbs").value),
+        fats: Number($("fats").value)
+    };
+
+    try {
+        const response = await fetch("/api/meal-history", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not save meal.");
+        }
+
+        $("message").textContent = result.message || "Meal saved!";
+        $("nutritionForm").reset();
+
+        ["calories", "protein", "carbs", "fats"].forEach(key => {
+            $(key).value = 0;
+        });
+
+        await loadHistory();
+
+    } catch (error) {
+        $("message").textContent = error.message;
+    }
+});
+
+$("history").addEventListener("click", async event => {
+    const button = event.target.closest("[data-delete]");
+    if (!button) return;
+
+    if (!confirm("Delete this saved meal?")) return;
+
+    try {
+        const response = await fetch(
+            "/api/meal-history/" + button.dataset.delete,
+            {method: "DELETE"}
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not delete meal.");
+        }
+
+        $("message").textContent = result.message || "Meal deleted.";
+        await loadHistory();
+
+    } catch (error) {
+        $("message").textContent = error.message;
+    }
+});
+
+loadHistory();
+</script>
+</body>
+</html>

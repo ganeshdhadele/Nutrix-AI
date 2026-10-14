@@ -1,0 +1,210 @@
+
+{% extends "base.html" %}
+
+{% block title %}Meal Planner | Nutrix AI{% endblock %}
+
+{% block content %}
+
+<section class="meal-hero mb-4">
+    <div class="meal-hero-content">
+        <span class="hero-badge">✦ YOUR PERSONAL NUTRITION COMPANION</span>
+        <h1 class="meal-main-title mt-3">
+            Plan Better.<br>
+            <span class="text-lime">Eat Brighter.</span>
+        </h1>
+        <p class="text-muted-custom">
+            Discover delicious meal ideas that fit your food preferences.
+            Make everyday eating simple, enjoyable and balanced.
+        </p>
+        <a href="#meal-builder" class="btn btn-lime">
+            ✨ Build My Meal Plan →
+        </a>
+    </div>
+
+    <div class="meal-hero-image">
+        <img
+            src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=85"
+            alt="Colorful balanced meal bowl">
+        <div class="meal-image-caption">
+            <span>🥗</span>
+            <div>
+                <strong>Good Food, Good Mood</strong>
+                <small>Everyday inspiration</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="meal-builder" class="meal-layout mb-5">
+
+    <aside class="card-dark meal-preferences">
+        <span class="meal-section-tag">PERSONALIZE YOUR PLAN</span>
+        <h2 class="mt-2">Your Preferences</h2>
+        <p class="text-muted-custom">
+            Tell us what works for you.
+        </p>
+
+        <form id="mealForm">
+            <div class="mb-3">
+                <label for="foodType" class="form-label">🥗 Food preference</label>
+                <select id="foodType" class="form-select" required>
+                    <option value="veg">Vegetarian</option>
+                    <option value="egg">Vegetarian + Eggs</option>
+                    <option value="nonveg">Includes Non-Veg</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="mealTime" class="form-label">🍽️ Meal time</label>
+                <select id="mealTime" class="form-select" required>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="snack">Snack</option>
+                    <option value="dinner">Dinner</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="goal" class="form-label">✨ Meal preference</label>
+                <select id="goal" class="form-select">
+                    <option value="balanced">Balanced everyday meals</option>
+                    <option value="protein">Include protein-rich foods</option>
+                    <option value="energy">Meals for an active day</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="allergy" class="form-label">
+                    ⚠️ Allergies / foods to avoid
+                </label>
+                <input
+                    id="allergy"
+                    class="form-control"
+                    type="text"
+                    maxlength="150"
+                    placeholder="e.g. peanuts, milk">
+                <small class="form-help">
+                    Separate multiple foods with commas.
+                </small>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-lime w-100 meal-generate-btn">
+                ✨ Generate Meal Ideas
+            </button>
+        </form>
+    </aside>
+
+    <div class="meal-results-area">
+
+        <div class="meal-results-heading">
+            <div>
+                <span class="meal-section-tag">MADE FOR YOUR PREFERENCES</span>
+                <h2 class="mt-2">Explore Meals <span>✦</span></h2>
+                <p class="text-muted-custom">
+                    Get inspired by these popular everyday food ideas.
+                </p>
+            </div>
+            <div class="meal-status">● FOOD INSPIRATION</div>
+        </div>
+
+        <div id="mealResults" aria-live="polite">
+            <div class="row g-3">
+
+                <div class="col-12 col-sm-6">
+                    <article class="card-dark food-preview">
+                        <div class="food-preview-image">
+                            <img
+                                src="https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=600&q=80"
+                                alt="Indian breakfast inspiration"
+                                loading="lazy">
+                            <span class="food-image-label">01 · BREAKFAST</span>
+                        </div>
+                        <div class="food-preview-body">
+                            <h3>Poha with Peanuts</h3>
+                            <p class="text-muted-custom">
+                                Poha with lemon and herbs. Add peanuts only
+                                if suitable for you.
+                            </p>
+                            <span class="food-card-footer">Everyday favourite <span>↗</span></span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <article class="card-dark food-preview">
+                        <div class="food-preview-image">
+                            <img
+                                src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=600&q=80"
+                                alt="Rice bowl meal inspiration"
+                                loading="lazy">
+                            <span class="food-image-label">02 · LUNCH</span>
+                        </div>
+                        <div class="food-preview-body">
+                            <h3>Dal & Rice Bowl</h3>
+                            <p class="text-muted-custom">
+                                Rice and dal with curd or vegetables
+                                you enjoy.
+                            </p>
+                            <span class="food-card-footer">Comforting meal <span>↗</span></span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <article class="card-dark food-preview">
+                        <div class="food-preview-image">
+                            <img
+                                src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=600&q=80"
+                                alt="Variety of fresh foods"
+                                loading="lazy">
+                            <span class="food-image-label">03 · SNACK</span>
+                        </div>
+                        <div class="food-preview-body">
+                            <h3>Fruit & Chana</h3>
+                            <p class="text-muted-custom">
+                                Seasonal fruit and roasted chana
+                                for a convenient snack.
+                            </p>
+                            <span class="food-card-footer">Simple & tasty <span>↗</span></span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <article class="card-dark food-preview">
+                        <div class="food-preview-image">
+                            <img
+                                src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80"
+                                alt="Colorful balanced meal"
+                                loading="lazy">
+                            <span class="food-image-label">04 · DINNER</span>
+                        </div>
+                        <div class="food-preview-body">
+                            <h3>Colorful Dinner Bowl</h3>
+                            <p class="text-muted-custom">
+                                A combination of grains, protein foods
+                                and vegetables.
+                            </p>
+                            <span class="food-card-footer">Build your plate <span>↗</span></span>
+                        </div>
+                    </article>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="meal-note mt-3">
+            <span>💚</span>
+            <p>
+                <strong>A gentle reminder:</strong>
+                Enjoy a variety of foods and choose meals that suit your
+                needs. These are general food ideas, not medical advice.
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+

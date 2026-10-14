@@ -1,0 +1,123 @@
+
+{% extends "base.html" %}
+{% block title %}Dashboard | Nutrix AI{% endblock %}
+
+{% block content %}
+
+<section class="nx-hero">
+    <div class="nx-hero-copy">
+        <span class="nx-badge">✦ YOUR PERSONAL NUTRITION COMPANION</span>
+        <h1>Eat Better.<br><span>Live Brighter.</span></h1>
+        <p>
+            Discover balanced meals and build healthy habits
+            with your personal nutrition planner.
+        </p>
+        <a href="{{ url_for('meal_planner') }}" class="nx-main-btn">
+            <span>🍴</span> Explore Meal Planner <span>→</span>
+        </a>
+    </div>
+
+    <div class="nx-hero-visual">
+        <img
+            src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1100&q=85"
+            alt="Colorful healthy meal bowl">
+        <div class="nx-hero-tag">
+            <span>🌿</span>
+            <div><strong>Good Food</strong><small>Good Mood</small></div>
+        </div>
+        <div class="nx-floating-label">✦ Healthy choices, every day</div>
+    </div>
+</section>
+
+<section class="nx-wellness">
+    <div class="nx-section-head">
+        <div class="nx-section-title">
+            <span class="nx-leaf-mark">🌿</span>
+            <div>
+                <h2>Your Wellness Space</h2>
+                <p>Small steps today. Healthier habits tomorrow.</p>
+            </div>
+        </div>
+        <span class="nx-hand-note">Small steps.<br>Big changes. ↙</span>
+    </div>
+
+    <div class="nx-card-grid">
+
+        <a href="{{ url_for('meal_planner') }}"
+           class="nx-feature nx-green">
+            <div class="nx-feature-photo">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=80"
+                     alt="Fresh healthy meal" loading="lazy">
+                <span class="nx-feature-icon">🍴</span>
+                <span class="nx-feature-pill">Plan Your Meals</span>
+            </div>
+            <div class="nx-feature-body">
+                <h3>Meal Planner</h3>
+                <p>Explore meal ideas based on your preferences and food choices.</p>
+                <div class="nx-feature-bottom">
+                    <span>🌱 Healthy meals · Better habits</span>
+                    <span class="nx-arrow">↗</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('nutrition') }}"
+           class="nx-feature nx-purple">
+            <div class="nx-feature-photo">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=700&q=80"
+                     alt="A variety of nutritious foods" loading="lazy">
+                <span class="nx-feature-icon">✧</span>
+                <span class="nx-feature-pill">Smart Ideas</span>
+            </div>
+            <div class="nx-feature-body">
+                <h3>Smart Suggestions</h3>
+                <p>Discover food options that fit your choices and everyday needs.</p>
+                <div class="nx-feature-bottom">
+                    <span>✧ Personalized · Simple</span>
+                    <span class="nx-arrow">↗</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('weekly_planner') }}"
+           class="nx-feature nx-blue">
+            <div class="nx-feature-photo">
+                <img src="{{ url_for('static', filename='images/healthy-food.jpg') }}"
+     alt="Refreshing water with lemon"
+     loading="lazy">
+                <span class="nx-feature-icon">↗</span>
+                <span class="nx-feature-pill">Build Habits</span>
+            </div>
+            <div class="nx-feature-body">
+                <h3>Daily Habits</h3>
+                <p>Build simple routines around hydration, variety and rest.</p>
+                <div class="nx-feature-bottom">
+                    <span>📈 Track · Improve · Grow</span>
+                    <span class="nx-arrow">↗</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="{{ url_for('nutrition') }}"
+           class="nx-feature nx-orange">
+            <div class="nx-feature-photo">
+                <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=700&q=80"
+                     alt="Fresh vegetables and ingredients" loading="lazy">
+                <span class="nx-feature-icon">▤</span>
+                <span class="nx-feature-pill">Learn & Grow</span>
+            </div>
+            <div class="nx-feature-body">
+                <h3>Nutrition Guide</h3>
+                <p>Explore food variety, ingredients and everyday nutrition tips.</p>
+                <div class="nx-feature-bottom">
+                    <span>💡 Knowledge · Better choices</span>
+                    <span class="nx-arrow">↗</span>
+                </div>
+            </div>
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}
+

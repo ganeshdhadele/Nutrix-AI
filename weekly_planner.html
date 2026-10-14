@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Weekly Meal Planner | Nutrix AI{% endblock %}
+{% block content %}
+<section class="card-dark p-4 p-md-5 mb-4">
+  <span class="hero-badge">YOUR WEEK, PLANNED</span>
+  <h1 class="mt-3">7-Day <span class="text-lime">Meal Planner</span></h1>
+  <p class="text-muted-custom">Generate a simple meal inspiration plan and save it to your account.</p>
+  <div class="row g-3 mt-2">
+    <div class="col-md-4"><label class="form-label" for="weeklyFood">Food preference</label>
+      <select id="weeklyFood" class="form-select"><option value="veg">Vegetarian</option><option value="egg">Vegetarian + eggs</option><option value="nonveg">Includes non-veg</option></select></div>
+    <div class="col-md-4"><label class="form-label" for="weeklyGoal">Preference</label>
+      <select id="weeklyGoal" class="form-select"><option value="balanced">Balanced</option><option value="protein">Protein options</option><option value="energy">Energy</option></select></div>
+    <div class="col-md-4 d-flex align-items-end"><button id="generateWeek" class="btn btn-lime w-100">Generate 7 days</button></div>
+  </div>
+  <p id="weeklyMessage" class="text-lime mt-3" role="status"></p>
+</section>
+<section id="weekResults" class="row g-3"></section>
+<section class="card-dark p-4 mt-4">
+  <h2>Saved weekly plans</h2><div id="savedPlans" class="text-muted-custom">Loading...</div>
+</section>
+<script>
+const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const mealSets = {
+ veg: [["Poha","Dal and rice","Fruit and chana","Dal khichdi"],["Upma","Chana rice","Fruit and curd","Paneer rice bowl"],["Besan chilla","Dal rice","Roasted chana","Chana pulao"],["Poha","Paneer rice bowl","Seasonal fruit","Dal khichdi"],["Upma","Chana rice","Fruit and curd","Dal rice"],["Besan chilla","Dal rice","Roasted chana","Paneer rice bowl"],["Poha","Chana pulao","Seasonal fruit","Dal khichdi"]],
+ egg: [["Egg and toast","Egg curry and rice","Fruit","Egg bhurji and rice"],["Egg poha","Dal rice and egg","Roasted chana","Egg curry and rice"],["Egg and toast","Egg curry and rice","Fruit","Dal rice and egg"],["Egg poha","Dal rice and egg","Fruit","Egg bhurji and rice"],["Egg and toast","Egg curry and rice","Roasted chana","Dal rice and egg"],["Egg poha","Dal rice and egg","Fruit","Egg bhurji and rice"],["Egg and toast","Egg curry and rice","Roasted chana","Egg curry and rice"]],
+ nonveg: [["Egg and toast","Chicken and rice","Fruit","Fish and rice"],["Chicken sandwich","Fish and rice","Roasted chana","Chicken rice bowl"],["Egg and toast","Chicken and rice","Fruit","Fish and rice"],["Chicken sandwich","Fish and rice","Fruit","Chicken rice bowl"],["Egg and toast","Chicken and rice","Roasted chana","Fish and rice"],["Chicken sandwich","Fish and rice","Fruit","Chicken rice bowl"],["Egg and toast","Chicken and rice","Roasted chana","Fish and rice"]]
+};
+let currentPlan = [];
+const esc = s => { const e=document.createElement("span"); e.textContent=s; return e.innerHTML; };
+document.getElementById("generateWeek").addEventListener("click", () => {
+ const food=document.getElementById("weeklyFood").value;
+ currentPlan=days.map((day,i)=>({day, breakfast:mealSets[food][i][0], lunch:mealSets[food][i][1], snack:mealSets[food][i][2], dinner:mealSets[food][i][3]}));
+ document.getElementById("weekResults").innerHTML=currentPlan.map(d=>`
+ <div class="col-12 col-md-6 col-xl-4"><article class="card-dark p-3 h-100">
+ <h3 class="text-lime">${d.day}</h3><p>🌅 <b>Breakfast:</b> ${esc(d.breakfast)}</p>
+ <p>☀️ <b>Lunch:</b> ${esc(d.lunch)}</p><p>🍎 <b>Snack:</b> ${esc(d.snack)}</p>
+ <p>🌙 <b>Dinner:</b> ${esc(d.dinner)}</p></article></div>`).join("");
+ document.getElementById("weeklyMessage").textContent="Plan generated. Review ingredients and portion sizes to suit your needs.";
+});
+async function saveWeek(){
+ const name="Weekly plan - "+new Date().toLocaleDateString();
+ const r=await fetch("/api/weekly-plans",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({plan_name:name,plan_data:currentPlan})});
+ const d=await r.json(); if(!r.ok) throw Error(d.error||"Could not save");
+ document.getElementById("weeklyMessage").textContent=d.message; await loadPlans();
+}
+document.getElementById("weekResults").addEventListener("click",()=>{});
+const saveButton=document.createElement("button"); saveButton.className="btn btn-lime mt-3"; saveButton.textContent="Save this weekly plan";
+saveButton.addEventListener("click",async()=>{try{if(!currentPlan.length) throw Error("Generate a plan first."); await saveWeek();}catch(e){document.getElementById("weeklyMessage").textContent=e.message;}});
+document.getElementById("weekResults").after(saveButton);
+async function loadPlans(){
+ try{const r=await fetch("/api/weekly-plans");if(!r.ok) throw Error("Please log in again.");const plans=await r.json();
+ document.getElementById("savedPlans").innerHTML=plans.length?plans.map(p=>`<div class="py-2 border-bottom"><b>${esc(p.plan_name)}</b><small class="d-block">${esc(p.created_at)}</small></div>`).join(""):"No saved plans yet.";
+ }catch(e){document.getElementById("savedPlans").textContent=e.message;}
+}
+loadPlans();
+</script>
+{% endblock %}
